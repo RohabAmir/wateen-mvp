@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
+
+  --color-plum: #4b2565;
+  --color-plum-dark: #3a1c4f;
+  --color-plum-deep: #24112f;
+  --color-plum-soft: #8a6aa0;
+  --color-mist: #f3edf6;
+  --color-lilac: #c3c6f5;
+  --color-orange: #ee751b;
+  --color-orange-dark: #d5640f;
+  --color-orange-light: #fff3ea;
+  --color-ink: #162f34;
+  --color-ink-soft: #3c4b4f;
+  --color-metal: #6b7280;
+  --color-line: #ece8ef;
+  --color-disabled: #d4d0d8;
+  --color-canvas: #faf8fb;
+  --color-danger: #d2374f;
+  --color-danger-light: #ffebee;
+  --color-success: #12a37f;
+  --color-success-dark: #0f7a60;
+  --color-success-light: #e9faf5;
+  --color-warning: #a76708;
+  --color-warning-light: #fff7e6;
+  --color-info: #1270b4;
+  --color-info-light: #ebf5ff;
+}
+
+html {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  @apply rounded-2xl border border-line bg-white;
+}
+
+.input {
+  @apply w-full rounded-xl border border-disabled bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-metal/70 focus:border-plum focus:ring-2 focus:ring-plum/15 disabled:bg-canvas;
+}
+
+.input-sm {
+  @apply w-24 rounded-lg border border-disabled bg-white px-2 py-1.5 text-end text-sm text-ink outline-none focus:border-plum focus:ring-2 focus:ring-plum/15;
+}
+
+.label {
+  @apply mb-1.5 block text-sm font-medium text-ink-soft;
+}
+
+@utility btn {
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium whitespace-nowrap transition disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-plum text-white hover:bg-plum-dark;
+}
+@utility btn-orange {
+  @apply btn bg-orange text-white hover:bg-orange-dark;
+}
+@utility btn-outline {
+  @apply btn border border-disabled bg-white text-ink hover:border-plum hover:text-plum;
+}
+@utility btn-danger {
+  @apply btn bg-danger text-white hover:bg-[#b23044];
+}
+@utility btn-ghost {
+  @apply btn text-ink-soft hover:bg-mist;
+}
+
+.table-base {
+  @apply w-full text-sm;
+}
+.table-base th {
+  @apply border-b border-line bg-canvas/60 px-4 py-3 text-start text-xs font-medium tracking-wide whitespace-nowrap text-metal uppercase;
+}
+.table-base td {
+  @apply border-b border-line px-4 py-3;
+}
+.table-base tr:last-child td {
+  @apply border-b-0;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}

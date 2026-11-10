@@ -1,0 +1,369 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  PURCHASER
+  SUPPLIER
+  ADMIN
+}
+
+enum MovementType {
+  OPENING
+  RECEIVE
+  SALE
+  WASTE
+  TRANSFER_IN
+  TRANSFER_OUT
+  COUNT_ADJUST
+}
+
+enum POStatus {
+  DRAFT
+  PENDING_APPROVAL
+  SENT
+  CONFIRMED
+  SHIPPED
+  RECEIVED
+  REJECTED
+  CANCELLED
+}
+
+enum POSource {
+  SUGGESTION
+  MARKETPLACE
+  RFQ
+  MANUAL
+}
+
+enum CountStatus {
+  DRAFT
+  POSTED
+}
+
+enum RfqStatus {
+  OPEN
+  AWARDED
+  CLOSED
+}
+
+enum QuoteStatus {
+  SUBMITTED
+  AWARDED
+  LOST
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+}
+
+model Organization {
+  id                String          @id @default(cuid())
+  name              String
+  nameAr            String
+  approvalThreshold Float           @default(5000)
+  branches          Branch[]
+  users             User[]
+  items             Item[]
+  menuItems         MenuItem[]
+  purchaseOrders    PurchaseOrder[]
+  rfqs              Rfq[]
+  createdAt         DateTime        @default(now())
+}
+
+model Branch {
+  id             String          @id @default(cuid())
+  orgId          String
+  org            Organization    @relation(fields: [orgId], references: [id])
+  code           String          @unique
+  name           String
+  nameAr         String
+  district       String
+  districtAr     String
+  users          User[]
+  stock          Stock[]
+  movements      StockMovement[]
+  sales          Sale[]
+  counts         StockCount[]
+  purchaseOrders PurchaseOrder[]
+  rfqs           Rfq[]
+}
+
+model User {
+  id         String        @id @default(cuid())
+  email      String        @unique
+  name       String
+  nameAr     String
+  title      String
+  titleAr    String
+  role       Role
+  orgId      String?
+  org        Organization? @relation(fields: [orgId], references: [id])
+  branchId   String?
+  branch     Branch?       @relation(fields: [branchId], references: [id])
+  supplierId String?
+  supplier   Supplier?     @relation(fields: [supplierId], references: [id])
+  createdAt  DateTime      @default(now())
+}
+
+model Supplier {
+  id           String          @id @default(cuid())
+  name         String
+  nameAr       String
+  category     String
+  categoryAr   String
+  city         String
+  leadTimeDays Int
+  minOrder     Float
+  users        User[]
+  catalog      CatalogItem[]
+  orders       PurchaseOrder[]
+  quotes       Quote[]
+}
+
+model Item {
+  id          String          @id @default(cuid())
+  orgId       String
+  org         Organization    @relation(fields: [orgId], references: [id])
+  sku         String
+  name        String
+  nameAr      String
+  category    String
+  unit        String
+  avgCost     Float
+  calories    Int?
+  allergens   String[]
+  highValue   Boolean         @default(false)
+  stock       Stock[]
+  movements   StockMovement[]
+  recipeLines RecipeLine[]
+  catalog     CatalogItem[]
+  poLines     POLine[]
+  countLines  StockCountLine[]
+  rfqs        Rfq[]
+
+  @@unique([orgId, sku])
+}
+
+model Stock {
+  id           String @id @default(cuid())
+  branchId     String
+  branch       Branch @relation(fields: [branchId], references: [id])
+  itemId       String
+  item         Item   @relation(fields: [itemId], references: [id])
+  onHand       Float
+  parLevel     Float
+  reorderPoint Float
+
+  @@unique([branchId, itemId])
+}
+
+model StockMovement {
+  id        String       @id @default(cuid())
+  branchId  String
+  branch    Branch       @relation(fields: [branchId], references: [id])
+  itemId    String
+  item      Item         @relation(fields: [itemId], references: [id])
+  type      MovementType
+  qty       Float
+  unitCost  Float
+  refType   String?
+  refId     String?
+  note      String?
+  userId    String?
+  createdAt DateTime     @default(now())
+
+  @@index([branchId, type, createdAt])
+  @@index([itemId, createdAt])
+}
+
+model MenuItem {
+  id       String       @id @default(cuid())
+  orgId    String
+  org      Organization @relation(fields: [orgId], references: [id])
+  code     String
+  name     String
+  nameAr   String
+  category String
+  price    Float
+  lines    RecipeLine[]
+  sales    Sale[]
+
+  @@unique([orgId, code])
+}
+
+model RecipeLine {
+  id         String   @id @default(cuid())
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  itemId     String
+  item       Item     @relation(fields: [itemId], references: [id])
+  qty        Float
+}
+
+model Sale {
+  id         String   @id @default(cuid())
+  branchId   String
+  branch     Branch   @relation(fields: [branchId], references: [id])
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  qty        Int
+  revenue    Float
+  cost       Float
+  batch      String
+  soldAt     DateTime
+
+  @@index([branchId, soldAt])
+}
+
+model StockCount {
+  id        String           @id @default(cuid())
+  number    String           @unique
+  branchId  String
+  branch    Branch           @relation(fields: [branchId], references: [id])
+  status    CountStatus      @default(DRAFT)
+  userId    String
+  createdAt DateTime         @default(now())
+  postedAt  DateTime?
+  lines     StockCountLine[]
+}
+
+model StockCountLine {
+  id          String     @id @default(cuid())
+  countId     String
+  count       StockCount @relation(fields: [countId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        Item       @relation(fields: [itemId], references: [id])
+  expectedQty Float
+  countedQty  Float?
+  unitCost    Float
+}
+
+model PurchaseOrder {
+  id           String       @id @default(cuid())
+  number       String       @unique
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id])
+  branchId     String
+  branch       Branch       @relation(fields: [branchId], references: [id])
+  supplierId   String
+  supplier     Supplier     @relation(fields: [supplierId], references: [id])
+  status       POStatus     @default(DRAFT)
+  source       POSource
+  total        Float        @default(0)
+  note         String?
+  createdById  String
+  approvedById String?
+  expectedDate DateTime?
+  submittedAt  DateTime?
+  approvedAt   DateTime?
+  sentAt       DateTime?
+  confirmedAt  DateTime?
+  shippedAt    DateTime?
+  receivedAt   DateTime?
+  createdAt    DateTime     @default(now())
+  lines        POLine[]
+  rfq          Rfq?
+
+  @@index([supplierId, status])
+  @@index([orgId, status])
+}
+
+model POLine {
+  id            String        @id @default(cuid())
+  poId          String
+  po            PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  itemId        String
+  item          Item          @relation(fields: [itemId], references: [id])
+  qty           Float
+  unitPrice     Float
+  receivedQty   Float?
+  receivedPrice Float?
+}
+
+model CatalogItem {
+  id            String   @id @default(cuid())
+  supplierId    String
+  supplier      Supplier @relation(fields: [supplierId], references: [id])
+  itemId        String
+  item          Item     @relation(fields: [itemId], references: [id])
+  packSize      Float    @default(1)
+  price         Float
+  previousPrice Float?
+  minQty        Float    @default(1)
+  inStock       Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
+
+  @@unique([supplierId, itemId])
+}
+
+model Rfq {
+  id          String         @id @default(cuid())
+  number      String         @unique
+  orgId       String
+  org         Organization   @relation(fields: [orgId], references: [id])
+  branchId    String
+  branch      Branch         @relation(fields: [branchId], references: [id])
+  itemId      String
+  item        Item           @relation(fields: [itemId], references: [id])
+  qty         Float
+  dueDate     DateTime
+  status      RfqStatus      @default(OPEN)
+  note        String?
+  createdById String
+  poId        String?        @unique
+  po          PurchaseOrder? @relation(fields: [poId], references: [id])
+  createdAt   DateTime       @default(now())
+  quotes      Quote[]
+}
+
+model Quote {
+  id           String      @id @default(cuid())
+  rfqId        String
+  rfq          Rfq         @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  supplierId   String
+  supplier     Supplier    @relation(fields: [supplierId], references: [id])
+  unitPrice    Float
+  leadTimeDays Int
+  note         String?
+  status       QuoteStatus @default(SUBMITTED)
+  createdAt    DateTime    @default(now())
+
+  @@unique([rfqId, supplierId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  action    String
+  note      String?
+  userId    String?
+  userName  String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+}
+
+model Lead {
+  id        String     @id @default(cuid())
+  name      String
+  company   String
+  email     String
+  phone     String
+  branches  Int
+  segment   String
+  message   String?
+  status    LeadStatus @default(NEW)
+  createdAt DateTime   @default(now())
+}
