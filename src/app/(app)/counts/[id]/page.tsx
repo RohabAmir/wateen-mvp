@@ -66,7 +66,7 @@ export default async function CountPage({ params }: { params: Promise<{ id: stri
                           {draft ? (
                             <input name={`line_${l.id}`} type="number" step="0.01" min="0" defaultValue={l.countedQty ?? ""} className="input-sm" aria-label={l.item.name} />
                           ) : (
-                            num(l.countedQty ?? 0, locale, 2)
+                            l.countedQty === null ? "–" : num(l.countedQty, locale, 2)
                           )}
                         </td>
                         <td className={`text-end ${diff !== null && diff < 0 ? "text-danger" : ""}`}>{diff === null ? "—" : num(diff, locale, 2)}</td>

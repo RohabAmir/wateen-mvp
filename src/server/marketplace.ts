@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { User } from "@prisma/client";
 import { db } from "@/lib/db";
 import { round2 } from "@/lib/costing";
+import { days } from "@/lib/format";
 import { asOrgUser, assertBranch, audit, nextNumber } from "./access";
 import { assert } from "./errors";
 import { createPurchaseOrder } from "./procurement";
@@ -89,7 +90,7 @@ export async function submitQuote(user: User, rfqId: string, input: unknown) {
     create: { rfqId, supplierId: supplier.id, unitPrice: round2(d.unitPrice), leadTimeDays: d.leadTimeDays, note: d.note || null },
     update: { unitPrice: round2(d.unitPrice), leadTimeDays: d.leadTimeDays, note: d.note || null },
   });
-  await audit(db, "RFQ", rfqId, "QUOTED", user, `SAR ${quote.unitPrice} per unit, ${quote.leadTimeDays} days`, `${user.name} (${supplier.name})`);
+  await audit(db, "RFQ", rfqId, "QUOTED", user, `SAR ${quote.unitPrice} per unit, ${days(quote.leadTimeDays)}`, `${user.name} (${supplier.name})`);
   return quote;
 }
 

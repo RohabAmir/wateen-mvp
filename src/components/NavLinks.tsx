@@ -13,10 +13,12 @@ export interface NavItem {
 
 export function NavLinks({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
+  const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const current = items.filter((i) => matches(i.href)).sort((a, b) => b.href.length - a.href.length)[0]?.href;
   return (
     <nav className="flex gap-1 overflow-x-auto md:flex-col">
       {items.map((item) => {
-        const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const active = item.href === current;
         return (
           <Link
             key={item.href}

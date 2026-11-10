@@ -147,6 +147,8 @@ describe("insights", () => {
     expect(list.every((i) => i.severity === "high")).toBe(true);
     expect(list[1].impact).toBe(2640);
     expect(list.find((i) => i.kind === "PRICE")?.impact).toBe(360);
+    // Cost above the 32% target: (31 - 65 x 0.32) x 300 plates.
+    expect(list[0].impact).toBe(3060);
   });
 
   it("detects a waste spike and ignores small overstock", () => {

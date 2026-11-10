@@ -74,7 +74,7 @@ export default async function Landing() {
               </div>
               <div className="mt-3 space-y-2">
                 {[
-                  { c: "bg-danger", t: tx("Chicken breast at Olaya: 7.5% more used than recipes explain", "صدر الدجاج في العليا: استهلاك أعلى بـ7.5% مما تفسره الوصفات") },
+                  { c: "bg-danger", t: tx("Chicken breast at Olaya: far more used than recipes explain", "صدر الدجاج في العليا: استهلاك أعلى بكثير مما تفسره الوصفات") },
                   { c: "bg-orange", t: tx("Gulf Seafood raised shrimp by 11.4%. Send an RFQ.", "الخليج للمأكولات البحرية رفع سعر الروبيان 11.4%. أرسل طلب عروض.") },
                   { c: "bg-plum-soft", t: tx("Lettuce at Al Malqa runs out tomorrow", "الخس في الملقا ينفد غداً") },
                 ].map((i) => (

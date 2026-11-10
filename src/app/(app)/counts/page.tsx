@@ -56,7 +56,7 @@ export default async function CountsPage() {
                 const net = c.lines.reduce((s, l) => s + (l.countedQty === null ? 0 : (l.countedQty - l.expectedQty) * l.unitCost), 0);
                 return (
                   <tr key={c.id}>
-                    <td><Link href={`/counts/${c.id}`} className="font-medium text-plum hover:underline">{c.number}</Link></td>
+                    <td><Link href={`/counts/${c.id}`} className="font-medium whitespace-nowrap text-plum hover:underline">{c.number}</Link></td>
                     <td>{pickName(locale, c.branch)}</td>
                     <td>{date(c.createdAt, locale)}</td>
                     <td className="text-end">{c.lines.length}</td>

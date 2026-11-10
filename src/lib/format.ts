@@ -35,5 +35,10 @@ export function dateTime(d: Date | string | null | undefined, locale: Locale = "
   }).format(new Date(d));
 }
 
+export function days(n: number, locale: Locale = "en"): string {
+  if (locale === "ar") return n === 1 ? "يوم واحد" : n === 2 ? "يومان" : `${num(n, locale)} ${n <= 10 ? "أيام" : "يوماً"}`;
+  return `${num(n, locale)} ${n === 1 ? "day" : "days"}`;
+}
+
 export const DAY = 86_400_000;
 export const daysAgo = (n: number, from = Date.now()) => new Date(from - n * DAY);

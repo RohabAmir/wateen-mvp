@@ -56,7 +56,7 @@ export default async function DashboardPage() {
           hint={tx(`Recipes say ${pct(s.theoreticalPct)}. Gap ${pct(gap)}`, `حسب الوصفات ${pct(s.theoreticalPct, "ar")}. الفرق ${pct(gap, "ar")}`)}
         />
         <Stat tone="danger" label={tx("Unexplained stock loss", "خسائر مخزون غير مبررة")} value={sar(s.varianceCost, locale)} hint={tx("Found by stock counts", "كشفها الجرد")} />
-        <Stat tone="orange" label={tx("Recorded waste", "الهدر المسجل")} value={sar(s.wasteCost, locale)} hint={tx(`${r.lowStock} items below reorder point`, `${r.lowStock} صنف تحت حد الطلب`)} />
+        <Stat tone="orange" label={tx("Recorded waste", "الهدر المسجل")} value={sar(s.wasteCost, locale)} hint={tx(`Items below reorder point: ${r.lowStock}`, `أصناف تحت حد الطلب: ${r.lowStock}`)} />
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-5">

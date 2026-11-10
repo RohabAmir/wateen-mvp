@@ -7,6 +7,8 @@ const NOW = Date.now();
 const at = (daysAgo: number, hour = 10) => {
   const d = new Date(NOW - daysAgo * DAY);
   d.setHours(hour, 0, 0, 0);
+  // Never in the future; later hours stay closer to now so event order holds.
+  if (d.getTime() > NOW) d.setTime(NOW - (24 - hour) * 10 * 60_000);
   return d;
 };
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -15,10 +17,11 @@ const ym = (() => {
   return `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}`;
 })();
 
-// [sku, name, nameAr, category, unit, avgCost, calories per unit, allergens, highValue]
+// [sku, name, nameAr, category, unit, avgCost, calories per unit as served, allergens, highValue]
+// Bone-in lamb counts edible yield; frying oil counts only what the food absorbs.
 const ITEMS: [string, string, string, string, string, number, number | null, string[], boolean][] = [
   ["CHK", "Chicken breast", "صدر دجاج", "Meat & poultry", "kg", 24, 1650, [], true],
-  ["LMB", "Lamb shoulder", "كتف غنم", "Meat & poultry", "kg", 62, 2820, [], true],
+  ["LMB", "Lamb shoulder", "كتف غنم", "Meat & poultry", "kg", 62, 1900, [], true],
   ["BEF", "Beef mince", "لحم بقري مفروم", "Meat & poultry", "kg", 45, 2540, [], true],
   ["SHR", "Shrimp (peeled)", "روبيان مقشر", "Seafood", "kg", 70, 990, ["Shellfish"], true],
   ["RIC", "Basmati rice", "أرز بسمتي", "Dry goods", "kg", 7.5, 3600, [], false],
@@ -33,7 +36,7 @@ const ITEMS: [string, string, string, string, string, number, number | null, str
   ["CHP", "Chickpeas", "حمص حب", "Dry goods", "kg", 6, 3640, [], false],
   ["THN", "Tahini", "طحينة", "Dry goods", "kg", 18, 5950, ["Sesame"], false],
   ["OLV", "Olive oil", "زيت زيتون", "Dry goods", "L", 28, 8840, [], false],
-  ["VEG", "Vegetable oil", "زيت نباتي", "Dry goods", "L", 8, 8840, [], false],
+  ["VEG", "Vegetable oil", "زيت نباتي", "Dry goods", "L", 8, 3000, [], false],
   ["FLR", "Flour", "دقيق", "Dry goods", "kg", 3, 3640, ["Gluten"], false],
   ["PIT", "Arabic bread", "خبز عربي", "Bakery", "pcs", 0.35, 165, ["Gluten"], false],
   ["SPC", "Kabsa spice mix", "بهارات كبسة", "Dry goods", "kg", 35, 2500, [], false],
@@ -129,7 +132,7 @@ async function main() {
   const items = await db.item.findMany({ where: { orgId: org.id } });
   const item = Object.fromEntries(items.map((i) => [i.sku, i]));
 
-  const suppliers: Record<string, { id: string; leadTimeDays: number; catalog: Map<string, number> }> = {};
+  const suppliers: Record<string, { id: string; name: string; leadTimeDays: number; catalog: Map<string, number> }> = {};
   for (const [key, name, nameAr, category, categoryAr, leadTimeDays, minOrder, catalog] of SUPPLIERS) {
     const s = await db.supplier.create({ data: { name, nameAr, category, categoryAr, city: "Riyadh", leadTimeDays, minOrder } });
     await db.catalogItem.createMany({
@@ -137,7 +140,7 @@ async function main() {
         supplierId: s.id, itemId: item[sku].id, price, packSize, minQty, previousPrice: previousPrice ?? null,
       })),
     });
-    suppliers[key] = { id: s.id, leadTimeDays, catalog: new Map(catalog.map(([sku, price]) => [sku, price])) };
+    suppliers[key] = { id: s.id, name, leadTimeDays, catalog: new Map(catalog.map(([sku, price]) => [sku, price])) };
   }
   const preferred: Record<string, string> = {};
   for (const key of ["fresh", "wadi", "gulf", "dry", "najd"]) for (const sku of suppliers[key].catalog.keys()) preferred[sku] = key;
@@ -336,14 +339,21 @@ async function main() {
   await live("OLY", "wadi", "SHIPPED", noura.id, [["TOM", 60], ["ONI", 40], ["LET", 20], ["CUC", 30], ["LEM", 10], ["POT", 80]]);
 
   // An open RFQ for shrimp with one quote in, so Gulf Seafood can respond live.
+  // dueDate must stay in the future (do not use `at()`, which clamps future timestamps).
   const rfq = await db.rfq.create({
     data: {
-      number: `RFQ-${ym}-0001`, orgId: org.id, branchId: branchByCode.MLQ.id, itemId: item.SHR.id, qty: 40, dueDate: at(-3, 17), createdById: khalid.id,
-      note: "Monthly shrimp volume for all branches. Price must hold for 30 days.", createdAt: at(1, 10),
+      number: `RFQ-${ym}-0001`, orgId: org.id, branchId: branchByCode.MLQ.id, itemId: item.SHR.id, qty: 40,
+      dueDate: new Date(Date.now() + 3 * DAY), createdById: khalid.id,
+      note: "Monthly shrimp volume for Al Malqa. Price must hold for 30 days.", createdAt: at(1, 10),
     },
   });
   await db.quote.create({ data: { rfqId: rfq.id, supplierId: suppliers.redsea.id, unitPrice: 71, leadTimeDays: 3, note: "Price held for 30 days", createdAt: at(0, 9) } });
-  await db.auditLog.create({ data: { entity: "RFQ", entityId: rfq.id, action: "CREATED", userId: khalid.id, userName: khalid.name, createdAt: at(1, 10) } });
+  await db.auditLog.createMany({
+    data: [
+      { entity: "RFQ", entityId: rfq.id, action: "CREATED", userId: khalid.id, userName: khalid.name, createdAt: at(1, 10) },
+      { entity: "RFQ", entityId: rfq.id, action: "QUOTED", userName: `Red Sea sales (${suppliers.redsea.name})`, note: "SAR 71 per unit, 3 days", createdAt: at(0, 9) },
+    ],
+  });
 
   await db.lead.createMany({
     data: [

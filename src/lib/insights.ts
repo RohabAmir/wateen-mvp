@@ -101,7 +101,7 @@ export function generateInsights(d: InsightInput): Insight[] {
     const fc = foodCostPct(m.cost, m.price);
     if (fc < MARGIN_ALERT_PCT || m.qtySold === 0) continue;
     const target = priceForTarget(m.cost, TARGET_FOOD_COST);
-    const impact = monthly((target - m.price) * m.qtySold);
+    const impact = monthly((m.cost - (m.price * TARGET_FOOD_COST) / 100) * m.qtySold);
     out.push({
       id: `margin-${m.item.en}`,
       kind: "MARGIN",

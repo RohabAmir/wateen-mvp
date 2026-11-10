@@ -6,23 +6,24 @@ import { loginAs } from "@/app/actions/auth";
 export const metadata = { title: "Log in" };
 export const dynamic = "force-dynamic";
 
-const ORDER = ["OWNER", "MANAGER", "PURCHASER", "SUPPLIER", "ADMIN"];
+const ORDER = ["MANAGER", "PURCHASER", "SUPPLIER", "OWNER", "ADMIN"];
 const STORY: Record<string, [string, string]> = {
-  "faisal@alnakheel.sa": ["Sees food cost, variance in riyals, menu engineering and AI insights across 3 branches.", "يرى تكلفة الطعام والفروقات بالريال وهندسة القائمة والرؤى الذكية لثلاثة فروع."],
   "noura@alnakheel.sa": ["Imports POS sales, records waste, runs stock counts and receives deliveries at Olaya.", "تستورد المبيعات وتسجل الهدر وتجري الجرد وتستلم الطلبات في فرع العليا."],
+  "omar@alnakheel.sa": ["Branch manager limited to the Al Malqa branch.", "مدير فرع يرى فرع الملقا فقط."],
   "khalid@alnakheel.sa": ["Approves orders above SAR 5,000, sends RFQs and compares supplier quotes.", "يوافق على الطلبات فوق 5,000 ريال ويرسل طلبات العروض ويقارن عروض الموردين."],
   "saad@freshfarms.sa": ["Confirms and ships orders, and keeps the Fresh Farms catalogue and prices up to date.", "يؤكد الطلبات ويشحنها ويحدّث كتالوج وأسعار مزارع فريش."],
   "hassan@gulfseafood.sa": ["Answers the open shrimp RFQ against a competing seafood supplier.", "يرد على طلب عروض الروبيان المفتوح أمام مورد منافس."],
   "majed@alwadi.sa": ["Produce supplier with a delivery already on its way to Olaya.", "مورد خضار لديه طلب في طريقه إلى فرع العليا."],
-  "omar@alnakheel.sa": ["Branch manager limited to the Al Malqa branch.", "مدير فرع يرى فرع الملقا فقط."],
+  "faisal@alnakheel.sa": ["Sees food cost, variance in riyals, menu engineering and AI insights across 3 branches.", "يرى تكلفة الطعام والفروقات بالريال وهندسة القائمة والرؤى الذكية لثلاثة فروع."],
   "sara@wateen-mvp.sa": ["Platform admin who follows up demo requests from the marketing site.", "مسؤولة المنصة تتابع طلبات العروض من الموقع."],
 };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { locale, tx } = await getI18n();
   const error = (await searchParams).error;
-  const users = (await db.user.findMany({ include: { branch: true } })).sort(
-    (a, b) => ORDER.indexOf(a.role) - ORDER.indexOf(b.role) || a.email.localeCompare(b.email),
+  const storyOrder = Object.keys(STORY);
+  const users = (await db.user.findMany()).sort(
+    (a, b) => ORDER.indexOf(a.role) - ORDER.indexOf(b.role) || storyOrder.indexOf(a.email) - storyOrder.indexOf(b.email),
   );
 
   return (

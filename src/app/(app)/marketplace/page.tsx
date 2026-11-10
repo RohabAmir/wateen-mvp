@@ -3,7 +3,7 @@ import { requireUser } from "@/lib/session";
 import { getI18n } from "@/lib/locale";
 import { label, pickName } from "@/lib/i18n";
 import { db } from "@/lib/db";
-import { pct, sar } from "@/lib/format";
+import { days, pct, sar } from "@/lib/format";
 import { supplierScores } from "@/server/suppliers";
 import { Badge, Card, PageHeader, TableWrap } from "@/components/ui";
 
@@ -63,7 +63,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
                       {o.price === cheapest.get(o.itemId) && offers.filter((x) => x.itemId === o.itemId).length > 1 && <Badge tone="success">{tx("Best price", "أفضل سعر")}</Badge>}
                     </td>
                     <td className="text-end">{o.packSize} {label(locale, o.item.unit)}</td>
-                    <td className="text-end">{o.supplier.leadTimeDays} {tx("days", "أيام")}</td>
+                    <td className="text-end">{days(o.supplier.leadTimeDays, locale)}</td>
                     <td className="text-end">{scores.get(o.supplierId)?.score ?? "—"}</td>
                     <td><Link href={`/marketplace/${o.supplierId}`} className="text-plum hover:underline">{tx("Order", "اطلب")}</Link></td>
                   </tr>

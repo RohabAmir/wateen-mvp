@@ -50,7 +50,7 @@ export default async function SalesPage() {
             </div>
             <div className="rounded-xl bg-mist p-4">
               <p className="font-medium text-plum">{tx("Simulate today's POS export", "محاكاة ملف نقاط البيع لليوم")}</p>
-              <p className="mt-1 text-sm text-ink-soft">{tx("Loads a typical day of sales for this branch, about 450 covers.", "يُحمّل مبيعات يوم نموذجي لهذا الفرع، حوالي 450 طلباً.")}</p>
+              <p className="mt-1 text-sm text-ink-soft">{tx("Loads a typical day of sales for this branch, about 500 dishes.", "يُحمّل مبيعات يوم نموذجي لهذا الفرع، حوالي 500 طبق.")}</p>
               <SubmitButton name="mode" value="sample" className="btn-orange mt-3" pendingLabel={tx("Importing…", "جارٍ الاستيراد…")}>
                 {tx("Import today's sales", "استيراد مبيعات اليوم")}
               </SubmitButton>

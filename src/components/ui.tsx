@@ -215,9 +215,9 @@ export function BarChart({
       <div className="flex items-end gap-1" style={{ height }}>
         {data.map((d) => (
           <div key={d.key} className="group relative flex h-full flex-1 flex-col justify-end" title={`${d.label}: ${format(d.value)}`}>
-            <div className="w-full rounded-t-md bg-plum/85 transition group-hover:bg-orange" style={{ height: `${(d.value / max) * 100}%` }}>
+            <div className="flex w-full flex-col justify-end overflow-hidden rounded-t-md bg-plum/85 transition group-hover:bg-plum" style={{ height: `${(d.value / max) * 100}%` }}>
               {d.secondary !== undefined && (
-                <div className="w-full rounded-t-md bg-orange/80" style={{ height: `${d.value ? (d.secondary / d.value) * 100 : 0}%` }} />
+                <div className="w-full bg-orange/90" style={{ height: `${d.value ? (d.secondary / d.value) * 100 : 0}%` }} />
               )}
             </div>
           </div>

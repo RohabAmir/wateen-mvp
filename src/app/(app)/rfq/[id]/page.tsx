@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/session";
 import { getI18n } from "@/lib/locale";
 import { label, pickName } from "@/lib/i18n";
 import { db } from "@/lib/db";
-import { date, num, sar } from "@/lib/format";
+import { date, days, num, sar } from "@/lib/format";
 import { round2 } from "@/lib/costing";
 import { getRfq } from "@/server/marketplace";
 import { supplierScores } from "@/server/suppliers";
@@ -85,7 +85,7 @@ export default async function RfqPage({ params }: { params: Promise<{ id: string
                           <td className={`text-end ${saving > 0 ? "text-success-dark" : saving < 0 ? "text-danger" : ""}`}>
                             {saving > 0 ? tx(`saves ${sar(saving)}`, `يوفر ${sar(saving, "ar")}`) : saving < 0 ? tx(`+${sar(-saving)}`, `+${sar(-saving, "ar")}`) : "—"}
                           </td>
-                          <td className="text-end">{q.leadTimeDays} {tx("days", "أيام")}</td>
+                          <td className="text-end">{days(q.leadTimeDays, locale)}</td>
                           <td className="text-end">{scores.get(q.supplierId)?.score ?? tx("New", "جديد")}</td>
                           <td className="text-end">
                             {open ? (

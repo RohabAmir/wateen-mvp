@@ -159,7 +159,7 @@ export default async function ProcurementPage({ searchParams }: { searchParams: 
               <tbody className="num">
                 {visibleOrders.map((o) => (
                   <tr key={o.id}>
-                    <td><Link href={`/procurement/${o.id}`} className="font-medium text-plum hover:underline">{o.number}</Link></td>
+                    <td><Link href={`/procurement/${o.id}`} className="font-medium whitespace-nowrap text-plum hover:underline">{o.number}</Link></td>
                     <td>{pickName(locale, o.supplier)}</td>
                     <td>{pickName(locale, o.branch)}</td>
                     <td className="text-metal">{label(locale, o.source)}</td>

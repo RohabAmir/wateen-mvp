@@ -45,7 +45,7 @@ export default async function RfqListPage() {
               <tbody className="num">
                 {rfqs.map((r) => (
                   <tr key={r.id}>
-                    <td><Link href={`/rfq/${r.id}`} className="font-medium text-plum hover:underline">{r.number}</Link></td>
+                    <td><Link href={`/rfq/${r.id}`} className="font-medium whitespace-nowrap text-plum hover:underline">{r.number}</Link></td>
                     <td>{pickName(locale, r.item)}<span className="block text-xs text-metal">{pickName(locale, r.branch)}</span></td>
                     <td className="text-end">{num(r.qty, locale)} {label(locale, r.item.unit)}</td>
                     <td className="text-end">{r.quotes.length}</td>

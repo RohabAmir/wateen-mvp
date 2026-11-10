@@ -66,7 +66,7 @@ export default async function SupplierHome({ searchParams }: { searchParams: Pro
               <tbody className="num">
                 {orders.map((o) => (
                   <tr key={o.id}>
-                    <td><Link href={`/procurement/${o.id}`} className="font-medium text-plum hover:underline">{o.number}</Link></td>
+                    <td><Link href={`/procurement/${o.id}`} className="font-medium whitespace-nowrap text-plum hover:underline">{o.number}</Link></td>
                     <td>{pickName(locale, o.org)}</td>
                     <td>{pickName(locale, o.branch)}</td>
                     <td>{date(o.sentAt ?? o.createdAt, locale)}</td>

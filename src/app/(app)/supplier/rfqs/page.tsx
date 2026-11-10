@@ -1,7 +1,7 @@
 import { requireUser } from "@/lib/session";
 import { getI18n } from "@/lib/locale";
 import { label, pickName } from "@/lib/i18n";
-import { date, num, sar } from "@/lib/format";
+import { date, days, num, sar } from "@/lib/format";
 import { supplierRfqs } from "@/server/marketplace";
 import { Card, EmptyState, PageHeader, StatusBadge } from "@/components/ui";
 import { ActionForm, SubmitButton } from "@/components/ActionForm";
@@ -37,7 +37,7 @@ export default async function SupplierRfqsPage() {
                     <StatusBadge status={mine?.status ?? r.status} locale={locale} />
                   </div>
                   {r.note && <p className="mt-3 rounded-lg bg-canvas px-3 py-2 text-sm text-ink-soft">{r.note}</p>}
-                  {mine && <p className="mt-3 text-sm">{tx("Your quote", "عرضك")}: <span className="num font-medium">{sar(mine.unitPrice, locale, 2)}</span> · {mine.leadTimeDays} {tx("days", "أيام")}</p>}
+                  {mine && <p className="mt-3 text-sm">{tx("Your quote", "عرضك")}: <span className="num font-medium">{sar(mine.unitPrice, locale, 2)}</span> · {days(mine.leadTimeDays, locale)}</p>}
                   {open && (
                     <ActionForm action={quoteAction} className="mt-4 grid grid-cols-2 gap-3">
                       <input type="hidden" name="rfqId" value={r.id} />
