@@ -19,14 +19,16 @@ All times are on 9–10 November 2026, PKT (UTC+5).
 | 10 Nov 08:03–08:05 | Browser QA of marketing site and key dashboard personas. Screenshots saved under `docs/screenshots/` |
 | 10 Nov 08:06 | GitHub repo created and pushed: https://github.com/RohabAmir/wateen-mvp |
 | 10 Nov 08:09 | Vercel project linked and production deploy ready at https://wateen-mvp.vercel.app. Waiting on Neon Postgres (Marketplace) + seed, same gate as Dari |
+| 10 Nov 08:32 | Developer connected Neon store `neon-celeste-garden` to the Vercel project |
+| 10 Nov 08:37 | Production rebuild pushed schema and seeded Al Nakheel demo data. Health 200, full API smoke passed against https://wateen-mvp.vercel.app |
 
 ## Totals
 
-- Plan approved to production-ready local build, smoke, docs and screenshots: about 8 minutes of agent time on the approval turn, on top of the overnight feature build
-- Scaffold to first feature-complete commit: about 8 hours of calendar time across the overnight session (including idle gaps while tools and the developer session continued)
-- Agent working time for the feature-complete MVP (scaffold → commit → smoke → build → docs → screenshots): on the order of 1–2 hours of active coding and verification, not counting waits
+- Plan approved to live production URL: about 9 hours of calendar time from the first goal arm (9 Nov 23:32) to Neon go-live (10 Nov 08:37), including overnight gaps and waiting on Neon
+- Agent working time for the feature-complete MVP (scaffold → commit → smoke → build → docs → screenshots → deploy): on the order of 1–2 hours of active coding and verification, not counting waits
 - Size: about 6,200 lines of TypeScript/TSX across the app, Prisma schema and smoke script; 36 routes; Al Nakheel demo with 3 Riyadh branches
-- Quality gates: strict TypeScript, ESLint, Vitest (18 tests), scripted end-to-end API smoke of all three features plus marketing lead capture, production `next build`, browser walkthrough
+- Quality gates: strict TypeScript, ESLint, Vitest (18 tests), scripted end-to-end API smoke against local and production, production `next build`, browser walkthrough
+- Live: https://wateen-mvp.vercel.app
 
 ## How the work was split
 
