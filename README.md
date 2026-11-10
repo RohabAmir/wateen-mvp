@@ -2,6 +2,9 @@
 
 A working MVP of an AI-powered back-of-house platform for restaurants and F&B groups, modelled on [Wateen](https://wateen.ai/en). It replicates the three services the business runs on: inventory with recipe costing, e-procurement with approvals and RFQs, and a supplier marketplace with reporting that ties them together.
 
+**Repo:** https://github.com/RohabAmir/wateen-mvp  
+**Production URL:** https://wateen-mvp.vercel.app (needs Neon Postgres wired — same step as Dari)
+
 Built end to end with an AI coding agent. See [BUILD_LOG.md](BUILD_LOG.md) for the timeline and time taken.
 
 > Demonstration product. POS imports and supplier fulfilment are simulated. Not affiliated with Wateen.

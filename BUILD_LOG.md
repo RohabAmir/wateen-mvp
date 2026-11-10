@@ -17,6 +17,8 @@ All times are on 9–10 November 2026, PKT (UTC+5).
 | 10 Nov 08:00 | RFQ due-date seed bug fixed. End-to-end smoke passed against `localhost:3100` (port 3000 held by Dari) |
 | 10 Nov 08:01 | Production build passing (36 routes). README and BUILD_LOG written |
 | 10 Nov 08:03–08:05 | Browser QA of marketing site and key dashboard personas. Screenshots saved under `docs/screenshots/` |
+| 10 Nov 08:06 | GitHub repo created and pushed: https://github.com/RohabAmir/wateen-mvp |
+| 10 Nov 08:09 | Vercel project linked and production deploy ready at https://wateen-mvp.vercel.app. Waiting on Neon Postgres (Marketplace) + seed, same gate as Dari |
 
 ## Totals
 
